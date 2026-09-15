@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COMCAFE - Iniciar Sesión</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <style>
+        /* Estilos específicos para centrar la tarjeta de acceso */
+        body {
+            display: table;
+            height: 100vh;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-body);
+        }
+        .auth-wrapper {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+        }
+        .auth-container {
+            display: inline-block;
+            width: 100%;
+            max-width: 400px;
+            text-align: left;
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .auth-header h1 {
+            color: var(--primary);
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+        .auth-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .auth-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .btn-block {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>COMCAFE</h1>
+            <p>Sistema de Compra y Comercialización de Café</p>
+        </div>
+        
+        <form action="index.html" method="POST">
+            <div class="form-group">
+                <label for="usuario">Correo Electrónico</label>
+                <input type="email" id="usuario" class="form-control" placeholder="ejemplo@correo.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
+        </form>
+        
+        <div class="auth-footer">
+            ¿No tienes una cuenta? <a href="registro.html">Regístrate aquí</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
