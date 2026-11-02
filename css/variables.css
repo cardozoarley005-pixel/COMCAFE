@@ -1,0 +1,17 @@
+/* css/variables.css */
+:root {
+    --primary: #4a3319;         /* Marrón café */
+    --secondary: #2e7d32;       /* Verde éxito/hoja café */
+    --bg-body: #f8f9fa;         /* Gris muy claro */
+    --bg-card: #ffffff;         /* Blanco */
+    --text-main: #333333;
+    --text-muted: #666666;
+    --border-color: #dddddd;
+    --alert-warn: #e65100;      /* Naranja advertencia */
+    
+    --primary-light: #efebe9;   /* Fondos claros de café */
+    --secondary-light: #e8f5e9; /* Fondos claros de verde */
+    --border-radius: 8px;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --transition: all 0.3s ease;
+}
