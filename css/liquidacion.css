@@ -1,65 +1,16 @@
-// Dentro de js/liquidacion.js
+/* css/liquidacion.css */
+.form-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-formCompra.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    // Recopilar los valores para el backend
-    const datosCompra = {
-        cedula: txtCedula.value,
-        nombre: txtNombre.value,
-        finca: txtFinca.value,
-        tipo_cafe: document.getElementById('tipo_cafe').value,
-        sacos: parseFloat(inputSacos.value),
-        peso_bruto: parseFloat(inputPesoBruto.value),
-        tara: parseFloat(inputTara.value),
-        peso_neto: parseFloat(inputPesoNeto.value),
-        humedad: parseFloat(inputHumedad.value),
-        broca: parseFloat(document.getElementById('broca').value) || 0,
-        defectos: parseInt(document.getElementById('defectos').value) || 0,
-        factor: parseInt(inputFactor.value),
-        ajuste_factor: parseFloat(lblAjuste.innerText.replace(/[^0-9.-]+/g,"")),
-        descuento_humedad: parseFloat(lblDescuento.innerText.replace(/[^0-9.-]+/g,"")),
-        precio_final_kg: parseFloat(lblPrecioFinal.innerText.replace(/[^0-9.-]+/g,"")),
-        total_neto: parseFloat(lblTotalNeto.innerText.replace(/[^0-9.-]+/g,""))
-    };
-
-    try {
-        // Enviar datos al controlador PHP
-        const respuesta = await fetch('controladores/CompraController.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datosCompra)
-        });
-
-        const resultado = await respuesta.json();
-
-        if (resultado.success) {
-            alert('✅ ' + resultado.message);
-
-            // Agregar a la tabla visual
-            if (primeraCompra) {
-                tablaCompras.innerHTML = "";
-                primeraCompra = false;
-            }
-
-            const tipoSeleccionado = document.getElementById('tipo_cafe').options[document.getElementById('tipo_cafe').selectedIndex].text;
-            const nuevaFila = `
-                <tr>
-                    <td>${datosCompra.cedula}</td>
-                    <td>${datosCompra.nombre}</td>
-                    <td>${tipoSeleccionado}</td>
-                    <td>${datosCompra.peso_neto} Kg</td>
-                    <td>${lblPrecioFinal.innerText}</td>
-                    <td style="font-weight: bold; color: var(--secondary);">${lblTotalNeto.innerText}</td>
-                </tr>
-            `;
-            tablaCompras.innerHTML += nuevaFila;
-            resetearFormulario();
-        } else {
-            alert('❌ ' + resultado.message);
-        }
-    } catch (error) {
-        console.error('Error enviando la compra:', error);
-        alert(' Hubo un problema al conectar con el servidor PHP.');
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
     }
-});
+}
