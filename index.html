@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COMCAFE - Compra y Comercializadora de Café</title>
     <link rel="stylesheet" href="css/estilos.css">
+<!-- Librería para generar archivos PDF desde JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -15,9 +17,9 @@
 
     <main class="container">
         <form id="form-compra" class="form-grid">
-        
+            
             <section class="form-column">
-                
+                <!-- 1. IDENTIFICACIÓN DEL CAFICULTOR -->
                 <div class="card">
                     <div class="card-title">1. Identificación del Caficultor / Proveedor</div>
                     <div class="grid-inputs">
@@ -36,6 +38,7 @@
                     </div>
                 </div>
 
+                <!-- 2. REGISTRO DE PESO E INVENTARIO -->
                 <div class="card">
                     <div class="card-title">2. Registro de Peso e Inventario</div>
                     <div class="grid-inputs">
@@ -43,92 +46,91 @@
                             <label for="tipo_cafe">Tipo de Café</label>
                             <select id="tipo_cafe" name="tipo_cafe">
                                 <option value="pergamino">Café Pergamino Seco</option>
-                                <option value="pasilla">Pasilla / Segundas</option>
-                                <option value="verde">Café Verde (Oro)</option>
+                                <option value="pasilla">Pasilla de Finca</option>
+                                <option value="verde">Café Verde / Cereza</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="sacos">Número de Sacos</label>
-                            <input type="number" id="sacos" name="sacos" placeholder="Ej: 8" min="1" required>
+                            <input type="number" id="sacos" name="sacos" placeholder="Ej: 8" required min="1">
                         </div>
                         <div class="form-group">
                             <label for="peso_bruto">Peso Bruto (Kg)</label>
-                            <input type="number" id="peso_bruto" name="peso_bruto" placeholder="0.0" step="0.1" required>
+                            <input type="number" step="0.1" id="peso_bruto" name="peso_bruto" placeholder="0.0" required>
                         </div>
                         <div class="form-group">
                             <label for="tara">Descuento Tara (Kg)</label>
-                            <input type="number" id="tara" name="tara" value="0.0" readonly>
+                            <input type="number" step="0.1" id="tara" name="tara" value="0.0" readonly>
                         </div>
                         <div class="form-group">
                             <label for="peso_neto">Peso Neto Total (Kg)</label>
-                            <input type="number" id="peso_neto" name="peso_neto" value="0.0" readonly style="font-weight: bold; color: #000;">
+                            <input type="number" step="0.1" id="peso_neto" name="peso_neto" value="0.0" readonly>
                         </div>
                     </div>
                 </div>
 
+                <!-- 3. ANÁLISIS DE CALIDAD Y RENDIMIENTO -->
                 <div class="card">
-                    <div class="card-title">3. Análisis de Calidad (Laboratorio)</div>
+                    <div class="card-title">3. Análisis de Calidad (Factor de Rendimiento)</div>
                     <div class="grid-inputs">
                         <div class="form-group">
                             <label for="humedad">Porcentaje de Humedad (%)</label>
-                            <input type="number" id="humedad" name="humedad" value="12.0" step="0.1" min="5" max="30">
-                            <span id="alerta-humedad" class="alert-text" style="display: none;">⚠️ Humedad alta (>12.0%). Aplica penalización por secado.</span>
+                            <input type="number" step="0.1" id="humedad" name="humedad" value="12.0" required>
+                            <small id="alerta-humedad" style="color: var(--secondary); font-size: 0.8rem;"></small>
                         </div>
                         <div class="form-group">
-                            <label for="broca">Porcentaje de Broca (%)</label>
-                            <input type="number" id="broca" name="broca" placeholder="0.0" value="1.5" step="0.1">
+                            <label for="broca">Grano Brocado (%)</label>
+                            <input type="number" step="0.1" id="broca" name="broca" value="1.5">
                         </div>
                         <div class="form-group">
-                            <label for="defectos">Gramos de Pasilla (Defecto)</label>
-                            <input type="number" id="defectos" name="defectos" placeholder="0" value="0">
+                            <label for="defectos">Defectos / Pasilla (g)</label>
+                            <input type="number" id="defectos" name="defectos" value="0">
                         </div>
                         <div class="form-group">
-                            <label for="factor">Factor de Rendimiento</label>
-                            <input type="number" id="factor" name="factor" value="94" step="1" style="font-weight: bold; background-color: #e8f5e9; color: var(--secondary);">
+                            <label for="factor">Factor de Rendimiento Calculado</label>
+                            <input type="number" id="factor" name="factor" value="94" readonly style="font-weight: bold; background-color: #eef2f7;">
                         </div>
                     </div>
                 </div>
-
             </section>
 
+            <!-- PANEL LATERAL DE RESUMEN Y BOTÓN DE REGISTRO -->
             <aside class="checkout-sidebar">
-                <div class="card checkout-card">
-                    <div class="card-title" style="color: var(--primary); text-align: center; font-size: 1.2rem;">Resumen de Liquidación</div>
-                    
-                    <div class="data-row">
-                        <span>Precio Base del Día (Kg):</span>
-                        <strong id="lbl_precio_base">$12,500</strong>
+                <div class="card">
+                    <div class="card-title">Liquidación de Compra</div>
+                    <div class="summary-line">
+                        <span>Precio Base Carga (125Kg):</span>
+                        <span><strong>$ 2.100.000</strong></span>
                     </div>
-                    <div class="data-row">
+                    <div class="summary-line">
                         <span>Ajuste por Factor:</span>
-                        <span id="lbl_ajuste" style="color: var(--secondary); font-weight: bold;">$0</span>
+                        <span id="lbl_ajuste" style="color: var(--secondary);">$ 0</span>
                     </div>
-                    <div class="data-row">
+                    <div class="summary-line">
                         <span>Descuento por Humedad:</span>
-                        <span id="lbl_descuento" style="color: var(--alert-warn); font-weight: bold;">$0</span>
+                        <span id="lbl_descuento" style="color: var(--accent);">$ 0</span>
                     </div>
-                    <div class="data-row" style="background: #eee; padding: 5px; border-radius: 4px;">
-                        <span>Precio Final (Kg):</span>
-                        <strong id="lbl_precio_final">$12,500</strong>
+                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid var(--border-color);">
+                    <div class="summary-line">
+                        <span>Precio Final por Kg:</span>
+                        <span id="lbl_precio_final" style="font-weight: bold; color: var(--primary);">$ 16.800</span>
+                    </div>
+                    <div class="total-box">
+                        <div class="total-label">TOTAL A PAGAR AL CAFICULTOR</div>
+                        <div class="total-amount" id="lbl_total_neto">$ 0</div>
                     </div>
                     
-                    <div class="data-row total">
-                        <span>TOTAL NETO:</span>
-                        <span id="lbl_total_neto">$0</span>
-                    </div>
-
-                    <div class="btn-container">
-                        <button type="submit" class="btn btn-submit">💾 Registrar Compra</button>
-                        <button type="button" class="btn btn-cancel" onclick="resetearFormulario()">Cancelar</button>
-                    </div>
+                    <button type="submit" id="btn-registrar" class="btn-submit">💾 Registrar Compra</button>
                 </div>
             </aside>
+
         </form>
     </main>
 
-    <section class="container" style="margin-top: 30px; margin-bottom: 5px;">
+    <!-- HISTORIAL DE COMPRAS REGISTRADAS -->
+    <section class="container" style="margin-top: 30px; margin-bottom: 50px;">
         <div class="card" style="width: 100%;">
-            <div class="card-title">📋 Registro de Compras del Día (Sesión Actual)</div>
+            <div class="card-title">Compras Registradas en el Sistema</div>
             <div class="table-container" style="margin-top: 15px;">
                 <table>
                     <thead>
@@ -137,13 +139,13 @@
                             <th>Caficultor</th>
                             <th>Tipo Café</th>
                             <th>Peso Neto</th>
-                            <th>Precio Final Kg</th>
+                            <th>Precio Kg</th>
                             <th>Total Pagado</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-compras">
                         <tr>
-                            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No se han registrado compras en esta sesión.</td>
+                            <td colspan="6" style="text-align: center; color: var(--text-muted);">No hay compras registradas en la sesión actual.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -151,6 +153,8 @@
         </div>
     </section>
 
-   <script type="module" src="js/liquidacion.js"></script>
+    <!-- SCRIPTS DE NAVEGADOR -->
+    <script src="js/caficultores.js"></script>
+    <script src="js/liquidacion.js"></script>
 </body>
 </html>
