@@ -4,16 +4,44 @@
 async function verificarSesion() {
     try {
         const res = await fetch('controladores/VerificarSesion.php');
+        if (!res.ok) throw new Error('Error al conectar con la sesión');
+        
         const data = await res.json();
         
         if (!data.autenticado) {
             window.location.href = 'login.html';
+            return;
+        }
+
+        // Mostrar nombre del usuario en pantalla
+        const lblUsuario = document.getElementById('session-user-name');
+        if (lblUsuario) {
+            lblUsuario.innerText = `👤 ${data.usuario}`;
         }
     } catch (e) {
+        console.error('Error verificando sesión:', e);
+        // Si hay error de red o no autenticado, redirige al login
         window.location.href = 'login.html';
     }
 }
 verificarSesion();
+
+// Asignar evento al botón de Cerrar Sesión
+document.addEventListener('DOMContentLoaded', () => {
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                await fetch('controladores/LogoutController.php');
+            } catch (err) {
+                console.error('Error al cerrar sesión:', err);
+            } finally {
+                window.location.href = 'login.html';
+            }
+        });
+    }
+});
 
 // Elementos del DOM
 const txtCedula = document.getElementById('cedula');
