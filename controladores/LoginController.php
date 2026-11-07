@@ -1,46 +1,66 @@
 <?php
 // controladores/LoginController.php
 session_start();
-require_once __DIR__ . '/../modelos/Usuario.php';
+header('Content-Type: application/json');
 
-class LoginController {
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
 
-    public function iniciarSesion() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $correo   = trim($_POST['correo'] ?? '');
-            $password = trim($_POST['password'] ?? '');
+// Parámetros de conexión a XAMPP / MySQL
+$host = 'localhost';
+$dbname = 'comcafe_db';
+$username = 'root';
+$password = '';
 
-            if (empty($correo) || empty($password)) {
-                return "Por favor, completa todos los campos.";
-            }
+try {
+    $conexion = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    echo json_encode(['success' => false, 'message' => 'Error de conexión con MySQL']);
+    exit();
+}
 
-            $modeloUsuario = new Usuario();
-            $usuario = $modeloUsuario->obtenerPorCorreo($correo);
+$metodo = $_SERVER['REQUEST_METHOD'];
 
-            // Verificación del usuario y la contraseña (o coincidencia temporal si usas datos de prueba)
-            if ($usuario && ($password === $usuario['password'] || password_verify($password, $usuario['password']))) {
-                // Guardar la sesión del usuario
-                $_SESSION['usuario_id']     = $usuario['id'];
-                $_SESSION['usuario_nombre'] = $usuario['nombre'];
-                $_SESSION['usuario_rol']    = $usuario['rol'];
+if ($metodo === 'POST') {
+    $inputJSON = file_get_contents('php://input');
+    $datos = json_decode($inputJSON, true);
 
-                // Redireccionar al panel principal
-                header('Location: ../index.html');
-                exit();
+    $correo = trim($datos['correo'] ?? '');
+    $pass = trim($datos['password'] ?? '');
+
+    if (empty($correo) || empty($pass)) {
+        echo json_encode(['success' => false, 'message' => 'Por favor completa todos los campos.']);
+        exit();
+    }
+
+    try {
+        // Buscar el usuario por su correo
+        $stmt = $conexion->prepare("SELECT * FROM usuarios WHERE correo = :correo LIMIT 1");
+        $stmt->execute([':correo' => $correo]);
+        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($usuario) {
+            // Validar la contraseña (soporta texto plano o password_verify de PHP)
+            $passwordValida = ($pass === $usuario['password']) || password_verify($pass, $usuario['password']);
+
+            if ($passwordValida) {
+                $_SESSION['usuario_id'] = $usuario['id'] ?? null;
+                $_SESSION['usuario_nombre'] = $usuario['nombre'] ?? $usuario['correo'];
+                $_SESSION['usuario_rol'] = $usuario['rol'] ?? 'operador';
+
+                echo json_encode(['success' => true, 'message' => 'Acceso concedido']);
             } else {
-                return "Credenciales incorrectas. Verifica tu correo y contraseña.";
+                echo json_encode(['success' => false, 'message' => 'Contraseña incorrecta.']);
             }
+        } else {
+            echo json_encode(['success' => false, 'message' => 'El correo electrónico no está registrado.']);
         }
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => 'Error en consulta: ' . $e->getMessage()]);
     }
+    exit();
 }
 
-// Ejecutar si la petición viene del formulario login.html
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller = new LoginController();
-    $error = $controller->iniciarSesion();
-    
-    if (isset($error)) {
-        echo "<script>alert('{$error}'); window.location.href='../login.html';</script>";
-    }
-}
+echo json_encode(['success' => false, 'message' => 'Método no permitido']);
 ?>

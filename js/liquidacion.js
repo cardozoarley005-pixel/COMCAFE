@@ -1,4 +1,21 @@
 // js/liquidacion.js
+
+// 0. Verificar sesión activa al cargar la página
+async function verificarSesion() {
+    try {
+        const res = await fetch('controladores/VerificarSesion.php');
+        const data = await res.json();
+        
+        if (!data.autenticado) {
+            window.location.href = 'login.html';
+        }
+    } catch (e) {
+        window.location.href = 'login.html';
+    }
+}
+verificarSesion();
+
+// Elementos del DOM
 const txtCedula = document.getElementById('cedula');
 const txtNombre = document.getElementById('nombre');
 const txtFinca = document.getElementById('finca');

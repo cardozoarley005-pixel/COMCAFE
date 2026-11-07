@@ -6,7 +6,6 @@
     <title>COMCAFE - Iniciar Sesión</title>
     <link rel="stylesheet" href="css/estilos.css">
     <style>
-        /* Estilos específicos para centrar la tarjeta de acceso */
         body {
             display: table;
             height: 100vh;
@@ -31,28 +30,21 @@
             border: 1px solid var(--border-color);
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        .auth-header {
+        .auth-header { text-align: center; margin-bottom: 25px; }
+        .auth-header h1 { color: var(--primary); font-size: 26px; margin-bottom: 5px; }
+        .auth-header p { color: var(--text-muted); font-size: 14px; }
+        .auth-footer { margin-top: 20px; text-align: center; font-size: 14px; color: var(--text-muted); }
+        .btn-block { width: 100%; margin-top: 10px; }
+        .alert-error {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
             text-align: center;
-            margin-bottom: 25px;
-        }
-        .auth-header h1 {
-            color: var(--primary);
-            font-size: 26px;
-            margin-bottom: 5px;
-        }
-        .auth-header p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-        .auth-footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-        .btn-block {
-            width: 100%;
-            margin-top: 10px;
         }
     </style>
 </head>
@@ -65,10 +57,13 @@
             <p>Sistema de Compra y Comercialización de Café</p>
         </div>
         
-        <form action="index.html" method="POST">
+        <!-- Mensaje de alerta para errores -->
+        <div id="alerta-error" class="alert-error"></div>
+
+        <form id="form-login">
             <div class="form-group">
-                <label for="usuario">Correo Electrónico</label>
-                <input type="email" id="correo" name="correo" class="form-control" placeholder="ejemplo@correo.com" required>
+                <label for="correo">Correo Electrónico</label>
+                <input type="email" id="correo" name="correo" class="form-control" placeholder="ejemplo@correo.com" required autofocus>
             </div>
             
             <div class="form-group">
@@ -84,6 +79,9 @@
         </div>
     </div>
 </div>
+
+<!-- VÍNCULO OBLIGATORIO CON LOGIN.JS -->
+<script src="js/login.js"></script>
 
 </body>
 </html>
