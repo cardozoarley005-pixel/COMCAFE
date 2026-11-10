@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COMCAFE - Registrar Compra de Café Pergamino</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        comcafe: {
+                            tostado: '#3B2314',
+                            hoja: '#2D5A27',
+                            pergamino: '#D2B48C',
+                            fondo: '#F9F6F0'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-comcafe-fondo min-h-screen text-gray-800 flex flex-col justify-between">
+
+    <!-- Header Navigation -->
+    <header class="bg-comcafe-tostado text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-wide">COMCAFE</h1>
+            <span class="text-sm bg-comcafe-hoja px-3 py-1 rounded-full text-white font-medium">
+                Módulo Compras
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto my-8 px-4 w-full">
+        <div class="bg-white rounded-lg shadow-xl overflow-hidden border border-gray-200">
+            
+            <!-- Banner / Title -->
+            <div class="bg-comcafe-hoja px-6 py-4 text-white">
+                <h2 class="text-xl font-semibold">Registrar Compra de Café Pergamino</h2>
+                <p class="text-xs text-green-100 mt-1">Ingrese las variables del lote recibidas en la báscula y el laboratorio para la liquidación.</p>
+            </div>
+
+            <!-- Form -->
+            <form id="form-compra" class="p-6 space-y-6">
+                
+                <!-- Sección 1: Datos del Caficultor -->
+                <div>
+                    <h3 class="text-md font-bold text-comcafe-tostado border-b pb-1 mb-3">1. Datos del Caficultor</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="cedula" class="block text-sm font-semibold text-gray-700 mb-1">Cédula / Documento *</label>
+                            <input type="text" id="cedula" name="cedula" placeholder="Ej: 1075214000"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-comcafe-hoja focus:outline-none" required>
+                        </div>
+                        <div>
+                            <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-1">Nombre Completo *</label>
+                            <input type="text" id="nombre" name="nombre" placeholder="Ej: Juan Pérez"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-comcafe-hoja focus:outline-none" required>
+                        </div>
+                        <div>
+                            <label for="finca" class="block text-sm font-semibold text-gray-700 mb-1">Nombre de la Finca</label>
+                            <input type="text" id="finca" name="finca" placeholder="Ej: La Esperanza"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-comcafe-hoja focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 2: Pesaje y Lote -->
+                <div>
+                    <h3 class="text-md font-bold text-comcafe-tostado border-b pb-1 mb-3">2. Datos del Lote y Pesaje</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                        <div>
+                            <label for="tipo_cafe" class="block text-xs font-semibold text-gray-700 mb-1">Tipo de Café</label>
+                            <select id="tipo_cafe" name="tipo_cafe" class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-comcafe-hoja">
+                                <option value="pergamino" selected>Pergamino</option>
+                                <option value="pasilla">Pasilla</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="sacos" class="block text-xs font-semibold text-gray-700 mb-1">N° Sacos</label>
+                            <input type="number" id="sacos" name="sacos" placeholder="Ej: 5" value="0" min="0"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-comcafe-hoja">
+                        </div>
+                        <div>
+                            <label for="peso_bruto" class="block text-xs font-semibold text-gray-700 mb-1">Peso Bruto (Kg) *</label>
+                            <input type="number" step="0.01" id="peso_bruto" name="peso_bruto" placeholder="0.00" oninput="calcularPesoNeto()"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-comcafe-hoja" required>
+                        </div>
+                        <div>
+                            <label for="tara" class="block text-xs font-semibold text-gray-700 mb-1">Tara (Kg)</label>
+                            <input type="number" step="0.01" id="tara" name="tara" placeholder="0.00" value="0" oninput="calcularPesoNeto()"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-comcafe-hoja">
+                        </div>
+                        <div>
+                            <label for="peso_neto" class="block text-xs font-semibold text-gray-700 mb-1">Peso Neto (Kg)</label>
+                            <input type="number" step="0.01" id="peso_neto" name="peso_neto" placeholder="0.00" readonly
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-gray-100 font-bold text-comcafe-tostado">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 3: Análisis de Calidad -->
+                <div>
+                    <h3 class="text-md font-bold text-comcafe-tostado border-b pb-1 mb-3">3. Análisis de Calidad y Rendimiento</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
+                        <div>
+                            <label for="humedad" class="block text-xs font-semibold text-gray-700 mb-1">% Humedad *</label>
+                            <input type="number" step="0.1" id="humedad" name="humedad" placeholder="11.5" min="8" max="25"
+                                   class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-comcafe-hoja" required>
+                        </div>
+                        <div>
+                            <label for="broca" class="block text-xs font-semibold text-gray-700 mb-1">% Broca</label>
+                            <input type="number" step="0.1" id="broca" name="broca" placeholder="1.0" value="0"
+                                   class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-comcafe-hoja">
+                        </div>
+                        <div>
+                            <label for="defectos" class="block text-xs font-semibold text-gray-700 mb-1">% Defectos</label>
+                            <input type="number" step="0.1" id="defectos" name="defectos" placeholder="0.5" value="0"
+                                   class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-comcafe-hoja">
+                        </div>
+                        <div>
+                            <label for="factor" class="block text-xs font-semibold text-gray-700 mb-1">Factor Rend.</label>
+                            <input type="number" step="0.1" id="factor" name="factor" placeholder="94" value="94"
+                                   class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-comcafe-hoja">
+                        </div>
+                        <div>
+                            <label for="ajuste_factor" class="block text-xs font-semibold text-gray-700 mb-1">Ajuste Factor</label>
+                            <input type="number" step="0.01" id="ajuste_factor" name="ajuste_factor" placeholder="0.00" value="0"
+                                   class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-comcafe-hoja">
+                        </div>
+                        <div>
+                            <label for="descuento_humedad" class="block text-xs font-semibold text-gray-700 mb-1">Desc. Humedad</label>
+                            <input type="number" step="0.01" id="descuento_humedad" name="descuento_humedad" placeholder="0.00" value="0"
+                                   class="w-full px-2 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-comcafe-hoja">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 4: Liquidación -->
+                <div>
+                    <h3 class="text-md font-bold text-comcafe-tostado border-b pb-1 mb-3">4. Valores de Liquidación</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="precio_final_kg" class="block text-sm font-semibold text-gray-700 mb-1">Precio Final por Kg ($ COP) *</label>
+                            <input type="number" step="0.01" id="precio_final_kg" name="precio_final_kg" placeholder="Ej: 14500"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-comcafe-hoja focus:outline-none" required>
+                        </div>
+                        <div>
+                            <label for="total_neto" class="block text-sm font-semibold text-gray-700 mb-1">Total Neto a Pagar ($ COP) *</label>
+                            <input type="number" step="0.01" id="total_neto" name="total_neto" placeholder="Ej: 1820000"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-comcafe-hoja focus:outline-none bg-yellow-50 font-bold text-lg text-green-800" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+                    <button type="reset" class="px-6 py-2 border border-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-100">
+                        Limpiar Formulario
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-comcafe-tostado text-white font-semibold rounded-md hover:bg-opacity-90 transition">
+                        Guardar Registro
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 text-center py-4 text-xs">
+        Sistema COMCAFE &copy; 2026 - Gestión de Compra y Control de Café Pergamino
+    </footer>
+
+    <!-- Script de cálculo en cliente -->
+    <script>
+        function calcularPesoNeto() {
+            const bruto = parseFloat(document.getElementById('peso_bruto').value) || 0;
+            const tara = parseFloat(document.getElementById('tara').value) || 0;
+            const neto = Math.max(0, bruto - tara);
+            document.getElementById('peso_neto').value = neto.toFixed(2);
+        }
+    </script>
+    
+    <!-- Script de integración AJAX hacia controladores/CompraController.php -->
+    <script src="../js/compra.js"></script>
+</body>
+</html>
